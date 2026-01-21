@@ -970,6 +970,7 @@
     function openSubmitModal() {
       state.selectedCategories = [];
       document.getElementById('submit-form').reset();
+      document.getElementById('input-submitter').value = 'Connor';
       document.getElementById('submit-success').classList.add('hidden');
       document.getElementById('submit-form-container').classList.remove('hidden');
       renderCategorySelect();
