@@ -244,7 +244,8 @@
     let currentUser = null;
 
     const CONFIG = {
-      ADMIN_CODE: 'vortech'
+      ADMIN_CODE: 'vortech',
+      ALLOWED_EMAILS: ['connorjohnsullivan@gmail.com']
     };
 
     // Auth functions
@@ -660,14 +661,34 @@
     function init() {
       // Listen for auth state changes
       auth.onAuthStateChanged((user) => {
-        currentUser = user;
         if (user) {
-          // User is signed in - show app
+          // Check if user is allowed
+          if (!CONFIG.ALLOWED_EMAILS.includes(user.email)) {
+            // Not authorized - sign out and show error
+            auth.signOut();
+            document.getElementById('login-screen').innerHTML = `
+              <div class="text-center max-w-md w-full">
+                <div class="hud-bracket hud-bracket-amber p-8 bg-[#0F1D32] rounded-lg border border-[#FF6B35]">
+                  <div class="text-5xl mb-4">🚫</div>
+                  <h2 class="text-xl font-semibold text-[#FF6B35] mb-2 uppercase tracking-wider">ACCESS DENIED</h2>
+                  <p class="text-[#4A6B8A] text-sm mb-6">You are not authorized to access this system.</p>
+                  <p class="text-[#4A6B8A]/50 text-xs mb-6">${user.email}</p>
+                  <button onclick="location.reload()" class="px-6 py-3 bg-[#FF6B35]/20 hover:bg-[#FF6B35]/30 text-[#FF6B35] rounded border border-[#FF6B35]/50 uppercase tracking-wider text-sm">
+                    TRY AGAIN
+                  </button>
+                </div>
+              </div>
+            `;
+            return;
+          }
+          // User is authorized - show app
+          currentUser = user;
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('loading').classList.remove('hidden');
           initApp();
         } else {
           // User is signed out - show login
+          currentUser = null;
           document.getElementById('login-screen').classList.remove('hidden');
           document.getElementById('loading').classList.add('hidden');
           document.getElementById('main-app').classList.add('hidden');
