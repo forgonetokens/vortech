@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0A1628;
+  color: #E0F4FF;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for VORTECH theme */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A1628;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00D9FF40;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00D9FF80;
+}
+
+/* Swipe animations */
+.slide-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.slide-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.slide-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+/* Modal animations */
+.modal-backdrop {
+  animation: fadeIn 150ms ease-out;
+}
+
+.modal-content {
+  animation: slideUp 200ms ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Success animation */
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.success-pulse {
+  animation: successPulse 300ms ease-out;
+}
+
+/* Stalled glow effect */
+.stalled-glow {
+  box-shadow: 0 0 0 1px #FF6B35, 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px #00D9FF40, inset 0 0 5px #00D9FF10; }
+  50% { box-shadow: 0 0 15px #00D9FF60, inset 0 0 10px #00D9FF20; }
+}
+
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}

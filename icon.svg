@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F1D32"/>
+      <stop offset="100%" style="stop-color:#0A1628"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF"/>
+      <stop offset="100%" style="stop-color:#0088AA"/>
+    </linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  <!-- Border glow -->
+  <rect x="16" y="16" width="480" height="480" rx="72" fill="none" stroke="#00D9FF" stroke-width="2" opacity="0.3"/>
+  <!-- Corner brackets -->
+  <path d="M32 80 L32 32 L80 32" stroke="#00D9FF" stroke-width="4" fill="none" stroke-linecap="square"/>
+  <path d="M432 32 L480 32 L480 80" stroke="#00D9FF" stroke-width="4" fill="none" stroke-linecap="square"/>
+  <path d="M480 432 L480 480 L432 480" stroke="#00D9FF" stroke-width="4" fill="none" stroke-linecap="square"/>
+  <path d="M80 480 L32 480 L32 432" stroke="#00D9FF" stroke-width="4" fill="none" stroke-linecap="square"/>
+  <!-- Vortex rings (glow layer) -->
+  <ellipse cx="256" cy="220" rx="120" ry="40" fill="none" stroke="#00D9FF" stroke-width="8" opacity="0.2" filter="url(#blur)"/>
+  <ellipse cx="256" cy="220" rx="90" ry="30" fill="none" stroke="#00D9FF" stroke-width="6" opacity="0.3" filter="url(#blur)"/>
+  <ellipse cx="256" cy="220" rx="60" ry="20" fill="none" stroke="#00D9FF" stroke-width="4" opacity="0.4" filter="url(#blur)"/>
+  <!-- Vortex rings (main) -->
+  <ellipse cx="256" cy="220" rx="120" ry="40" fill="none" stroke="url(#glow)" stroke-width="3" opacity="0.6"/>
+  <ellipse cx="256" cy="220" rx="90" ry="30" fill="none" stroke="url(#glow)" stroke-width="3" opacity="0.8"/>
+  <ellipse cx="256" cy="220" rx="60" ry="20" fill="none" stroke="url(#glow)" stroke-width="3"/>
+  <!-- Center dot -->
+  <circle cx="256" cy="220" r="12" fill="#00D9FF"/>
+  <circle cx="256" cy="220" r="20" fill="#00D9FF" opacity="0.3" filter="url(#blur)"/>
+  <!-- VT text -->
+  <text x="256" y="400" text-anchor="middle" font-family="monospace" font-size="120" font-weight="bold" fill="#00D9FF" letter-spacing="8">VT</text>
+  <!-- Glow effect on text -->
+  <text x="256" y="400" text-anchor="middle" font-family="monospace" font-size="120" font-weight="bold" fill="#00D9FF" letter-spacing="8" opacity="0.4" filter="url(#blur)">VT</text>
+</svg>
