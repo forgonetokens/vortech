@@ -1,4 +1,4 @@
-const CACHE_NAME = 'local478-ideas-v7';
+const CACHE_NAME = 'vortech-v1';
 const STATIC_ASSETS = [
   './',
   './index.html',

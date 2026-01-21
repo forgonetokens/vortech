@@ -2,7 +2,7 @@
   "name": "VORTECH // Mission Control",
   "short_name": "VORTECH",
   "description": "Mission-critical ideation system. 100 ideas. One system.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0A1628",
   "theme_color": "#0A1628",
