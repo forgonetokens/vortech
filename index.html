@@ -248,6 +248,13 @@
       ALLOWED_EMAILS: ['connorjohnsullivan@gmail.com']
     };
 
+    const TECH_STACK_OPTIONS = [
+      'React', 'Vue', 'Svelte', 'Next.js', 'Node.js', 'Python', 'Django', 'FastAPI',
+      'Firebase', 'Supabase', 'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL',
+      'TypeScript', 'Tailwind', 'AWS', 'Vercel', 'Docker', 'OpenAI', 'Claude API',
+      'Stripe', 'Auth0', 'Prisma', 'tRPC', 'Electron', 'React Native', 'Swift', 'Rust', 'Go'
+    ];
+
     // Auth functions
     async function signInWithGoogle() {
       try {
@@ -431,9 +438,18 @@
               <label class="block text-xs font-medium text-[#4A6B8A] mb-2 uppercase tracking-wider">MISSION BRIEF <span class="text-[#4A6B8A]">(OPTIONAL)</span></label>
               <textarea id="input-description" rows="3" placeholder="Describe the objective..." class="w-full px-4 py-3 bg-[#0A1628] border border-[#1E3A5F] rounded text-[#E0F4FF] placeholder-[#4A6B8A] focus:outline-none focus:ring-1 focus:ring-[#00D9FF] focus:border-[#00D9FF] resize-none"></textarea>
             </div>
-            <div class="mb-6">
+            <div class="mb-4">
               <label class="block text-xs font-medium text-[#4A6B8A] mb-2 uppercase tracking-wider">CATEGORY TAGS</label>
               <div id="category-select" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="mb-6">
+              <label class="block text-xs font-medium text-[#4A6B8A] mb-2 uppercase tracking-wider">TECH STACK</label>
+              <div id="tech-stack-select" class="flex flex-wrap gap-2 mb-3 max-h-32 overflow-y-auto"></div>
+              <div class="flex gap-2">
+                <input type="text" id="custom-tech-input" placeholder="Add custom tech..." onkeypress="if(event.key==='Enter'){event.preventDefault();addCustomTech();}" class="flex-1 px-3 py-2 bg-[#0A1628] border border-[#1E3A5F] rounded text-[#E0F4FF] placeholder-[#4A6B8A] focus:outline-none focus:ring-1 focus:ring-[#00D9FF] focus:border-[#00D9FF] text-sm">
+                <button type="button" onclick="addCustomTech()" class="px-3 py-2 bg-[#00D9FF]/20 hover:bg-[#00D9FF]/30 text-[#00D9FF] rounded border border-[#00D9FF]/50 text-sm">+</button>
+              </div>
+              <div id="selected-tech-display" class="flex flex-wrap gap-1.5 mt-3"></div>
             </div>
             <div class="flex gap-3 safe-bottom">
               <button type="button" onclick="closeSubmitModal()" class="flex-1 px-4 py-3 bg-[#132238] hover:bg-[#1E3A5F] text-[#4A6B8A] rounded transition-colors touch-active font-medium uppercase tracking-wider text-sm border border-[#1E3A5F]">ABORT</button>
@@ -532,6 +548,7 @@
       isAdmin: localStorage.getItem('vortech_admin') === 'true',
       selectedIdea: null,
       selectedCategories: [],
+      selectedTechStack: [],
       selectedCategoryView: null,
       isRefreshing: false,
       isOffline: !navigator.onLine,
@@ -934,6 +951,9 @@
       const ideaCategories = (idea.categories || []).map(catId => state.categories.find(c => c.id === catId)).filter(Boolean);
       const displayCategories = ideaCategories.slice(0, 2);
       const remainingCount = ideaCategories.length - 2;
+      const techStack = idea.techStack || [];
+      const displayTech = techStack.slice(0, 3);
+      const remainingTech = techStack.length - 3;
       const noteCount = (idea.notes || []).length;
       const showLink = idea.link && (idea.stage === 'testing' || idea.stage === 'deployed');
       const score = getIdeaScore(idea);
@@ -950,9 +970,15 @@
           </div>
           ${idea.description ? `<p class="text-[#4A6B8A] text-xs sm:text-sm line-clamp-2 mb-3">${escapeHtml(idea.description)}</p>` : ''}
           ${ideaCategories.length > 0 ? `
-            <div class="flex flex-wrap gap-1.5 mb-3">
+            <div class="flex flex-wrap gap-1.5 mb-2">
               ${displayCategories.map(cat => `<span class="px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium uppercase tracking-wider" style="background-color: ${cat.color}15; color: ${cat.color}; border: 1px solid ${cat.color}30">${cat.label}</span>`).join('')}
               ${remainingCount > 0 ? `<span class="px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-[#132238] text-[#4A6B8A] border border-[#1E3A5F]">+${remainingCount}</span>` : ''}
+            </div>
+          ` : ''}
+          ${techStack.length > 0 ? `
+            <div class="flex flex-wrap gap-1 mb-3">
+              ${displayTech.map(tech => `<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30">${escapeHtml(tech)}</span>`).join('')}
+              ${remainingTech > 0 ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#132238] text-[#4A6B8A] border border-[#1E3A5F]">+${remainingTech}</span>` : ''}
             </div>
           ` : ''}
           <div class="flex items-center justify-between text-[10px] sm:text-xs text-[#4A6B8A]">
@@ -969,11 +995,13 @@
     // ==================== MODAL FUNCTIONS ====================
     function openSubmitModal() {
       state.selectedCategories = [];
+      state.selectedTechStack = [];
       document.getElementById('submit-form').reset();
       document.getElementById('input-submitter').value = 'Connor';
       document.getElementById('submit-success').classList.add('hidden');
       document.getElementById('submit-form-container').classList.remove('hidden');
       renderCategorySelect();
+      renderTechStackSelect();
       document.getElementById('submit-modal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
@@ -999,6 +1027,52 @@
       renderCategorySelect();
     }
 
+    function renderTechStackSelect() {
+      const container = document.getElementById('tech-stack-select');
+      container.innerHTML = TECH_STACK_OPTIONS.map(tech => `
+        <button type="button" onclick="toggleTechStack('${tech}')" class="px-2 py-1 rounded text-xs font-medium transition-all touch-active border ${state.selectedTechStack.includes(tech) ? 'border-[#8B5CF6] bg-[#8B5CF6]/20 text-[#8B5CF6]' : 'border-[#1E3A5F] bg-[#0A1628] text-[#4A6B8A] opacity-70 hover:opacity-100'}">${tech}</button>
+      `).join('');
+      renderSelectedTech();
+    }
+
+    function toggleTechStack(tech) {
+      if (state.selectedTechStack.includes(tech)) {
+        state.selectedTechStack = state.selectedTechStack.filter(t => t !== tech);
+      } else {
+        state.selectedTechStack.push(tech);
+      }
+      renderTechStackSelect();
+    }
+
+    function addCustomTech() {
+      const input = document.getElementById('custom-tech-input');
+      const tech = input.value.trim();
+      if (tech && !state.selectedTechStack.includes(tech)) {
+        state.selectedTechStack.push(tech);
+        input.value = '';
+        renderTechStackSelect();
+      }
+    }
+
+    function removeTech(tech) {
+      state.selectedTechStack = state.selectedTechStack.filter(t => t !== tech);
+      renderTechStackSelect();
+    }
+
+    function renderSelectedTech() {
+      const container = document.getElementById('selected-tech-display');
+      if (state.selectedTechStack.length === 0) {
+        container.innerHTML = '<span class="text-[#4A6B8A] text-xs">No tech selected</span>';
+      } else {
+        container.innerHTML = state.selectedTechStack.map(tech => `
+          <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30">
+            ${tech}
+            <button type="button" onclick="removeTech('${tech}')" class="hover:text-white ml-1">&times;</button>
+          </span>
+        `).join('');
+      }
+    }
+
     async function submitIdea(e) {
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
@@ -1021,6 +1095,7 @@
         submitter,
         stage: 'new',
         categories: [...state.selectedCategories],
+        techStack: [...state.selectedTechStack],
         blocked: false,
         blockedReason: '',
         notes: [],
@@ -1146,9 +1221,18 @@
             ` : ''}
           </div>
 
+          <div>
+            <h3 class="text-xs sm:text-sm font-medium text-[#4A6B8A] mb-2 uppercase tracking-wider">Tech Stack</h3>
+            <div class="flex flex-wrap gap-2">
+              ${(idea.techStack || []).length > 0 ? (idea.techStack || []).map(tech => `
+                <span class="px-2 py-1 rounded text-xs font-medium bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30">${escapeHtml(tech)}</span>
+              `).join('') : '<span class="text-[#4A6B8A] text-sm">No tech stack specified</span>'}
+            </div>
+          </div>
+
           <div class="flex items-center justify-between flex-wrap gap-2">
-            <div class="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-slate-400 flex-wrap">
-              <span>by <span class="text-white">${escapeHtml(idea.submitter)}</span></span>
+            <div class="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-[#4A6B8A] flex-wrap">
+              <span>OP: <span class="text-[#E0F4FF]">${escapeHtml(idea.submitter)}</span></span>
               ${idea.createdAt ? `<span>${new Date(idea.createdAt).toLocaleDateString()}</span>` : ''}
             </div>
             <div class="flex items-center gap-2">
